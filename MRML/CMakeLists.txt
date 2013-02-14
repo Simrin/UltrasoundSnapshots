@@ -8,8 +8,8 @@ set(${KIT}_INCLUDE_DIRECTORIES
   )
 
 set(${KIT}_SRCS
-  vtkMRML${MODULE_NAME}ParametersNode.cxx
-  vtkMRML${MODULE_NAME}ParametersNode.h
+  vtkMRML${MODULE_NAME}Node.cxx
+  vtkMRML${MODULE_NAME}Node.h
   )
 
 set(${KIT}_TARGET_LIBRARIES

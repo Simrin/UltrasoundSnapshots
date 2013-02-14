@@ -20,11 +20,12 @@
 
 // SlicerQt includes
 #include "qSlicerAbstractModuleWidget.h"
-
 #include "qSlicerUltrasoundSnapshotsModuleExport.h"
 
 class qSlicerUltrasoundSnapshotsModuleWidgetPrivate;
 class vtkMRMLNode;
+class vtkMRMLUltrasoundSnapshotsNode;
+class vtkMRMLScalarVolumeNode;
 
 /// \ingroup Slicer_QtModules_ExtensionTemplate
 class Q_SLICER_QTMODULES_ULTRASOUNDSNAPSHOTS_EXPORT qSlicerUltrasoundSnapshotsModuleWidget :
@@ -37,12 +38,17 @@ public:
   typedef qSlicerAbstractModuleWidget Superclass;
   qSlicerUltrasoundSnapshotsModuleWidget(QWidget *parent=0);
   virtual ~qSlicerUltrasoundSnapshotsModuleWidget();
+  vtkMRMLScalarVolumeNode* mrmlUSSourceNode()const;
 
 public slots:
-  
+  /// Set the MRML node of interest
+  void setMRMLUSSourceNode(vtkMRMLNode* node);
+
   void OnAddSnapshotClicked();
   void OnClearSnapshotsClicked();
-  
+
+protected slots:
+  void onCurrentMRMLUSSourceNodeChanged(vtkMRMLNode* node);
 
 protected:
   QScopedPointer<qSlicerUltrasoundSnapshotsModuleWidgetPrivate> d_ptr;

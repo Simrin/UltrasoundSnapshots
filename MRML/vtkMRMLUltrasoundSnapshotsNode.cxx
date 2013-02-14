@@ -6,7 +6,7 @@ See COPYRIGHT.txt
 or http://www.slicer.org/copyright/copyright.txt for details.
 
 Program:   3D Slicer
-Module:    $RCSfile: vtkMRMLUltrasoundSnapshotsParametersNode.cxx,v $
+Module:    $RCSfile: vtkMRMLUltrasoundSnapshotsNode.cxx,v $
 Date:      $Date: 2006/03/17 15:10:10 $
 Version:   $Revision: 1.2 $
 
@@ -20,7 +20,7 @@ Version:   $Revision: 1.2 $
 
 
 // CropModuleMRML includes
-#include "vtkMRMLUltrasoundSnapshotsParametersNode.h"
+#include "vtkMRMLUltrasoundSnapshotsNode.h"
 
 // AnnotationModuleMRML includes
 
@@ -28,23 +28,23 @@ Version:   $Revision: 1.2 $
 // STD includes
 
 //----------------------------------------------------------------------------
-vtkMRMLNodeNewMacro(vtkMRMLUltrasoundSnapshotsParametersNode);
+vtkMRMLNodeNewMacro(vtkMRMLUltrasoundSnapshotsNode);
 
 //----------------------------------------------------------------------------
-vtkMRMLUltrasoundSnapshotsParametersNode::vtkMRMLUltrasoundSnapshotsParametersNode()
+vtkMRMLUltrasoundSnapshotsNode::vtkMRMLUltrasoundSnapshotsNode()
 {
   this->HideFromEditors = 1;
 
 }
 
 //----------------------------------------------------------------------------
-vtkMRMLUltrasoundSnapshotsParametersNode::~vtkMRMLUltrasoundSnapshotsParametersNode()
+vtkMRMLUltrasoundSnapshotsNode::~vtkMRMLUltrasoundSnapshotsNode()
 {
 
 }
 
 //----------------------------------------------------------------------------
-void vtkMRMLUltrasoundSnapshotsParametersNode::ReadXMLAttributes(const char** atts)
+void vtkMRMLUltrasoundSnapshotsNode::ReadXMLAttributes(const char** atts)
 {
   std::cerr << "Reading UltrasoundSnapshots param node!" << std::endl;
   Superclass::ReadXMLAttributes(atts);
@@ -57,7 +57,7 @@ void vtkMRMLUltrasoundSnapshotsParametersNode::ReadXMLAttributes(const char** at
 }
 
 //----------------------------------------------------------------------------
-void vtkMRMLUltrasoundSnapshotsParametersNode::WriteXML(ostream& of, int nIndent)
+void vtkMRMLUltrasoundSnapshotsNode::WriteXML(ostream& of, int nIndent)
 {
   Superclass::WriteXML(of, nIndent);
 
@@ -69,17 +69,17 @@ void vtkMRMLUltrasoundSnapshotsParametersNode::WriteXML(ostream& of, int nIndent
 //----------------------------------------------------------------------------
 // Copy the node\"s attributes to this object.
 // Does NOT copy: ID, FilePrefix, Name, SliceID
-void vtkMRMLUltrasoundSnapshotsParametersNode::Copy(vtkMRMLNode *anode)
+void vtkMRMLUltrasoundSnapshotsNode::Copy(vtkMRMLNode *anode)
 {
   Superclass::Copy(anode);
-  vtkMRMLUltrasoundSnapshotsParametersNode *node = vtkMRMLUltrasoundSnapshotsParametersNode::SafeDownCast(anode);
+  vtkMRMLUltrasoundSnapshotsNode *node = vtkMRMLUltrasoundSnapshotsNode::SafeDownCast(anode);
   this->DisableModifiedEventOn();
 
 
 }
 
 //----------------------------------------------------------------------------
-void vtkMRMLUltrasoundSnapshotsParametersNode::PrintSelf(ostream& os, vtkIndent indent)
+void vtkMRMLUltrasoundSnapshotsNode::PrintSelf(ostream& os, vtkIndent indent)
 {
   Superclass::PrintSelf(os,indent);
 
