@@ -6,7 +6,7 @@ See COPYRIGHT.txt
 or http://www.slicer.org/copyright/copyright.txt for details.
 
 Program:   3D Slicer
-Module:    $RCSfile: vtkMRMLUltrasoundSnapshotsNode.cxx,v $
+Module:    $RCSfile: vtkMRMLSliceSnapshotCollectionNode.cxx,v $
 Date:      $Date: 2006/03/17 15:10:10 $
 Version:   $Revision: 1.2 $
 
@@ -18,7 +18,7 @@ Version:   $Revision: 1.2 $
 #include <vtkSmartPointer.h>
 
 // MRML includes
-#include "vtkMRMLUltrasoundSnapshotsNode.h"
+#include "vtkMRMLSliceSnapshotCollectionNode.h"
 #include "vtkMRMLModelNode.h"
 #include "vtkMRMLModelDisplayNode.h"
 #include "vtkMRMLScene.h"
@@ -26,30 +26,30 @@ Version:   $Revision: 1.2 $
 
 
 //----------------------------------------------------------------------------
-//vtkMRMLNodeNewMacro(vtkMRMLUltrasoundSnapshotsNode);
+//vtkMRMLNodeNewMacro(vtkMRMLSliceSnapshotCollectionNode);
 
 //----------------------------------------------------------------------------
-vtkMRMLUltrasoundSnapshotsNode* vtkMRMLUltrasoundSnapshotsNode::New()
+vtkMRMLSliceSnapshotCollectionNode* vtkMRMLSliceSnapshotCollectionNode::New()
 {
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkMRMLUltrasoundSnapshotsNode");
+  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkMRMLSliceSnapshotCollectionNode");
   if(ret)
   {
-    return(vtkMRMLUltrasoundSnapshotsNode*)ret;
+    return(vtkMRMLSliceSnapshotCollectionNode*)ret;
   }
-  return new vtkMRMLUltrasoundSnapshotsNode;
+  return new vtkMRMLSliceSnapshotCollectionNode;
 }
 
-vtkMRMLNode* vtkMRMLUltrasoundSnapshotsNode::CreateNodeInstance()
+vtkMRMLNode* vtkMRMLSliceSnapshotCollectionNode::CreateNodeInstance()
 {
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkMRMLUltrasoundSnapshotsNode");
+  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkMRMLSliceSnapshotCollectionNode");
   if(ret)
   {
-    return(vtkMRMLUltrasoundSnapshotsNode*)ret;
+    return(vtkMRMLSliceSnapshotCollectionNode*)ret;
   }
-  return new vtkMRMLUltrasoundSnapshotsNode;
+  return new vtkMRMLSliceSnapshotCollectionNode;
 }
 //----------------------------------------------------------------------------
-vtkMRMLUltrasoundSnapshotsNode::vtkMRMLUltrasoundSnapshotsNode()
+vtkMRMLSliceSnapshotCollectionNode::vtkMRMLSliceSnapshotCollectionNode()
 {
   this->SnapshotNodeRef = NULL;
   this->HideFromEditors = 1;
@@ -57,15 +57,15 @@ vtkMRMLUltrasoundSnapshotsNode::vtkMRMLUltrasoundSnapshotsNode()
 }
 
 //----------------------------------------------------------------------------
-vtkMRMLUltrasoundSnapshotsNode::~vtkMRMLUltrasoundSnapshotsNode()
+vtkMRMLSliceSnapshotCollectionNode::~vtkMRMLSliceSnapshotCollectionNode()
 {
   this->SetSnapshotNodeRef(NULL);
 }
 
 //----------------------------------------------------------------------------
-void vtkMRMLUltrasoundSnapshotsNode::ReadXMLAttributes(const char** atts)
+void vtkMRMLSliceSnapshotCollectionNode::ReadXMLAttributes(const char** atts)
 {
-  std::cerr << "Reading UltrasoundSnapshots param node!" << std::endl;
+  std::cerr << "Reading SliceSnapshotCollection param node!" << std::endl;
   Superclass::ReadXMLAttributes(atts);
 
   // Read all MRML node attributes from two arrays of names and values
@@ -87,7 +87,7 @@ void vtkMRMLUltrasoundSnapshotsNode::ReadXMLAttributes(const char** atts)
 }
 
 //----------------------------------------------------------------------------
-void vtkMRMLUltrasoundSnapshotsNode::WriteXML(ostream& of, int nIndent)
+void vtkMRMLSliceSnapshotCollectionNode::WriteXML(ostream& of, int nIndent)
 {
   Superclass::WriteXML(of, nIndent);
 
@@ -103,10 +103,10 @@ void vtkMRMLUltrasoundSnapshotsNode::WriteXML(ostream& of, int nIndent)
 //----------------------------------------------------------------------------
 // Copy the node\"s attributes to this object.
 // Does NOT copy: ID, FilePrefix, Name, SliceID
-void vtkMRMLUltrasoundSnapshotsNode::Copy(vtkMRMLNode *anode)
+void vtkMRMLSliceSnapshotCollectionNode::Copy(vtkMRMLNode *anode)
 {
   Superclass::Copy(anode);
-  vtkMRMLUltrasoundSnapshotsNode *node = vtkMRMLUltrasoundSnapshotsNode::SafeDownCast(anode);
+  vtkMRMLSliceSnapshotCollectionNode *node = vtkMRMLSliceSnapshotCollectionNode::SafeDownCast(anode);
   this->SetSnapshotNodeRef(node->SnapshotNodeRef);
   //this->DisableModifiedEventOn();
 
@@ -114,7 +114,7 @@ void vtkMRMLUltrasoundSnapshotsNode::Copy(vtkMRMLNode *anode)
 }
 
 //----------------------------------------------------------------------------
-void vtkMRMLUltrasoundSnapshotsNode::PrintSelf(ostream& os, vtkIndent indent)
+void vtkMRMLSliceSnapshotCollectionNode::PrintSelf(ostream& os, vtkIndent indent)
 {
   Superclass::PrintSelf(os,indent);
 
@@ -125,7 +125,7 @@ void vtkMRMLUltrasoundSnapshotsNode::PrintSelf(ostream& os, vtkIndent indent)
 
 //----------------------------------------------------------------------------
 
-vtkMRMLModelDisplayNode* vtkMRMLUltrasoundSnapshotsNode::GetSnapshotNode()
+vtkMRMLModelDisplayNode* vtkMRMLSliceSnapshotCollectionNode::GetSnapshotNode()
 {
 
   vtkMRMLModelDisplayNode* node = NULL;
@@ -139,7 +139,7 @@ vtkMRMLModelDisplayNode* vtkMRMLUltrasoundSnapshotsNode::GetSnapshotNode()
 
 
 //----------------------------------------------------------------------------
-void vtkMRMLUltrasoundSnapshotsNode::UpdateReferences()
+void vtkMRMLSliceSnapshotCollectionNode::UpdateReferences()
 {
   Superclass::UpdateReferences();
   
@@ -150,7 +150,7 @@ void vtkMRMLUltrasoundSnapshotsNode::UpdateReferences()
 }
 
 //----------------------------------------------------------------------------
-void vtkMRMLUltrasoundSnapshotsNode::UpdateReferenceID(const char *oldID, const char *newID)
+void vtkMRMLSliceSnapshotCollectionNode::UpdateReferenceID(const char *oldID, const char *newID)
 {
   Superclass::UpdateReferenceID(oldID, newID);
 
@@ -161,7 +161,7 @@ void vtkMRMLUltrasoundSnapshotsNode::UpdateReferenceID(const char *oldID, const 
 }
 
 //----------------------------------------------------------------------------
-void vtkMRMLUltrasoundSnapshotsNode::UpdateScene(vtkMRMLScene *scene)
+void vtkMRMLSliceSnapshotCollectionNode::UpdateScene(vtkMRMLScene *scene)
 {
   Superclass::UpdateScene(scene);
 }

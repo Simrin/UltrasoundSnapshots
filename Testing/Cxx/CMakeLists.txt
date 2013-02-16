@@ -11,7 +11,7 @@ SlicerMacroConfigureGenericCxxModuleTests(${MODULE_NAME} KIT_TEST_SRCS KIT_TEST_
 create_test_sourcelist(Tests ${KIT}CxxTests.cxx
   ${KIT_TEST_NAMES_CXX}
   # Add source of your tests after this line.
-  vtkMRMLUltrasoundSnapshotsNodeTest1.cxx
+  vtkMRMLSliceSnapshotCollectionNodeTest1.cxx
   EXTRA_INCLUDE vtkMRMLDebugLeaksMacro.h
   )
 list(REMOVE_ITEM Tests ${KIT_TEST_NAMES_CXX})
@@ -27,4 +27,4 @@ foreach(testname ${KIT_TEST_NAMES})
 endforeach()
 
 # Add your test after this line, using SIMPLE_TEST( <testname> )
-SIMPLE_TEST(vtkMRMLUltrasoundSnapshotsNodeTest1)
+SIMPLE_TEST(vtkMRMLSliceSnapshotCollectionNodeTest1)

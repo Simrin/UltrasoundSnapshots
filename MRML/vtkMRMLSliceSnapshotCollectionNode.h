@@ -14,14 +14,14 @@
   limitations under the License.
 
 ==============================================================================*/
-// .NAME vtkMRMLUltrasoundSnapshotsNode - MRML node for storing a slice through RAS space
+// .NAME vtkMRMLSliceSnapshotCollectionNode - MRML node for storing a slice through RAS space
 // .SECTION Description
 // This node stores the information about the currently selected volume
 //
 //
 
-#ifndef __vtkMRMLUltrasoundSnapshotsNode_h
-#define __vtkMRMLUltrasoundSnapshotsNode_h
+#ifndef __vtkMRMLSliceSnapshotCollectionNode_h
+#define __vtkMRMLSliceSnapshotCollectionNode_h
 
 // MRML includes
 #include "vtkMRML.h"
@@ -35,14 +35,14 @@ class vtkMRMLModelDisplayNode;
 class vtkMRMLModelNode;
 
 /// \ingroup Slicer_QtModules_UltrasoundSnapshots
-class VTK_SLICER_ULTRASOUNDSNAPSHOTS_MODULE_MRML_EXPORT vtkMRMLUltrasoundSnapshotsNode : public vtkMRMLNode
+class VTK_SLICER_ULTRASOUNDSNAPSHOTS_MODULE_MRML_EXPORT vtkMRMLSliceSnapshotCollectionNode : public vtkMRMLNode
 {
   public:   
 
   // Standard MRML node methods
 
-  static vtkMRMLUltrasoundSnapshotsNode *New();
-  vtkTypeMacro(vtkMRMLUltrasoundSnapshotsNode,vtkMRMLNode);
+  static vtkMRMLSliceSnapshotCollectionNode *New();
+  vtkTypeMacro(vtkMRMLSliceSnapshotCollectionNode,vtkMRMLNode);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual vtkMRMLNode* CreateNodeInstance();
@@ -57,7 +57,7 @@ class VTK_SLICER_ULTRASOUNDSNAPSHOTS_MODULE_MRML_EXPORT vtkMRMLUltrasoundSnapsho
   virtual void Copy(vtkMRMLNode *node);
 
   // Get node XML tag name (like Volume, Model)
-  virtual const char* GetNodeTagName() {return "UltrasoundSnapshots";};
+  virtual const char* GetNodeTagName() {return "SliceSnapshotCollection";};
 
   //
   //virtual void SetSceneReferences();
@@ -81,11 +81,11 @@ class VTK_SLICER_ULTRASOUNDSNAPSHOTS_MODULE_MRML_EXPORT vtkMRMLUltrasoundSnapsho
 
 protected:
   // Constructor/destructor
-  vtkMRMLUltrasoundSnapshotsNode();
-  ~vtkMRMLUltrasoundSnapshotsNode();
+  vtkMRMLSliceSnapshotCollectionNode();
+  ~vtkMRMLSliceSnapshotCollectionNode();
 
-  vtkMRMLUltrasoundSnapshotsNode(const vtkMRMLUltrasoundSnapshotsNode&);
-  void operator=(const vtkMRMLUltrasoundSnapshotsNode&);
+  vtkMRMLSliceSnapshotCollectionNode(const vtkMRMLSliceSnapshotCollectionNode&);
+  void operator=(const vtkMRMLSliceSnapshotCollectionNode&);
 
   // Protected member variables
 

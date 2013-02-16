@@ -10,16 +10,16 @@
 
 =========================================================================auto=*/
 
-#include "vtkMRMLUltrasoundSnapshotsNode.h"
+#include "vtkMRMLSliceSnapshotCollectionNode.h"
 
 #include <vtkPolyData.h>
 
 
 #include "vtkMRMLCoreTestingMacros.h"
 
-int vtkMRMLUltrasoundSnapshotsNodeTest1(int , char * [] )
+int vtkMRMLSliceSnapshotCollectionNodeTest1(int , char * [] )
 {
-  vtkSmartPointer< vtkMRMLUltrasoundSnapshotsNode > node1 = vtkSmartPointer< vtkMRMLUltrasoundSnapshotsNode >::New();
+  vtkSmartPointer< vtkMRMLSliceSnapshotCollectionNode > node1 = vtkSmartPointer< vtkMRMLSliceSnapshotCollectionNode >::New();
 
   EXERCISE_BASIC_OBJECT_METHODS( node1 );
   

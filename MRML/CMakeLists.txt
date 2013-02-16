@@ -8,8 +8,8 @@ set(${KIT}_INCLUDE_DIRECTORIES
   )
 
 set(${KIT}_SRCS
-  vtkMRML${MODULE_NAME}Node.cxx
-  vtkMRML${MODULE_NAME}Node.h
+  vtkMRMLSliceSnapshotCollectionNode.cxx
+  vtkMRMLSliceSnapshotCollectionNode.h
   )
 
 set(${KIT}_TARGET_LIBRARIES
