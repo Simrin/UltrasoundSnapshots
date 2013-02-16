@@ -27,14 +27,18 @@
 #include "vtkMRML.h"
 #include "vtkMRMLScene.h"
 #include "vtkMRMLNode.h"
+#include "vtkMRMLStorageNode.h"
 #include "vtkSlicerUltrasoundSnapshotsModuleMRMLExport.h"
 
-// VTK includes
+
+class vtkMRMLSnapshotNode;
 
 /// \ingroup Slicer_QtModules_UltrasoundSnapshots
 class VTK_SLICER_ULTRASOUNDSNAPSHOTS_MODULE_MRML_EXPORT vtkMRMLUltrasoundSnapshotsNode : public vtkMRMLNode
 {
   public:   
+
+  // Standard MRML node methods
 
   static vtkMRMLUltrasoundSnapshotsNode *New();
   vtkTypeMacro(vtkMRMLUltrasoundSnapshotsNode,vtkMRMLNode);
@@ -42,31 +46,46 @@ class VTK_SLICER_ULTRASOUNDSNAPSHOTS_MODULE_MRML_EXPORT vtkMRMLUltrasoundSnapsho
 
   virtual vtkMRMLNode* CreateNodeInstance();
 
-  // Description:
   // Set node attributes
   virtual void ReadXMLAttributes( const char** atts);
 
-  // Description:
   // Write this node's information to a MRML file in XML format.
   virtual void WriteXML(ostream& of, int indent);
 
-  // Description:
   // Copy the node's attributes to this object
   virtual void Copy(vtkMRMLNode *node);
 
-  // Description:
   // Get node XML tag name (like Volume, Model)
   virtual const char* GetNodeTagName() {return "UltrasoundSnapshots";};
 
+  //
+  //virtual void SetSceneReferences();
 
+  // Updates this node if it depends on other nodes when the node is deleted in the scene
+  virtual void UpdateReferences();
+
+  // Update the stored reference to another node in the scene
+  virtual void UpdateReferenceID(const char *oldID, const char *newID);
+
+  virtual void UpdateScene(vtkMRMLScene *scene);
+
+  // Public interface
+  
+  vtkSetReferenceStringMacro(SnapshotNodeRef);
+  vtkGetStringMacro(SnapshotNodeRef);
+  vtkMRMLSnapshotNode *GetSnapshotNode();
 
 protected:
+  // Constructor/destructor
   vtkMRMLUltrasoundSnapshotsNode();
   ~vtkMRMLUltrasoundSnapshotsNode();
 
   vtkMRMLUltrasoundSnapshotsNode(const vtkMRMLUltrasoundSnapshotsNode&);
   void operator=(const vtkMRMLUltrasoundSnapshotsNode&);
 
+  // Protected member variables
+
+  char* SnapshotNodeRef;
 
 };
 

@@ -15,24 +15,42 @@ Version:   $Revision: 1.2 $
 // VTK includes
 #include <vtkCommand.h>
 #include <vtkObjectFactory.h>
+#include <vtkSmartPointer.h>
 
 // MRML includes
-
-
-// CropModuleMRML includes
 #include "vtkMRMLUltrasoundSnapshotsNode.h"
+#include "vtkMRMLSnapshotNode.h"
+#include "vtkMRMLScene.h"
+#include "vtkSmartPointer.h"
 
-// AnnotationModuleMRML includes
-
-
-// STD includes
 
 //----------------------------------------------------------------------------
-vtkMRMLNodeNewMacro(vtkMRMLUltrasoundSnapshotsNode);
+//vtkMRMLNodeNewMacro(vtkMRMLUltrasoundSnapshotsNode);
 
+//----------------------------------------------------------------------------
+vtkMRMLUltrasoundSnapshotsNode* vtkMRMLUltrasoundSnapshotsNode::New()
+{
+  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkMRMLUltrasoundSnapshotsNode");
+  if(ret)
+  {
+    return(vtkMRMLUltrasoundSnapshotsNode*)ret;
+  }
+  return new vtkMRMLUltrasoundSnapshotsNode;
+}
+
+vtkMRMLNode* vtkMRMLUltrasoundSnapshotsNode::CreateNodeInstance()
+{
+  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkMRMLUltrasoundSnapshotsNode");
+  if(ret)
+  {
+    return(vtkMRMLUltrasoundSnapshotsNode*)ret;
+  }
+  return new vtkMRMLUltrasoundSnapshotsNode;
+}
 //----------------------------------------------------------------------------
 vtkMRMLUltrasoundSnapshotsNode::vtkMRMLUltrasoundSnapshotsNode()
 {
+  this->SnapshotNodeRef = NULL;
   this->HideFromEditors = 1;
 
 }
@@ -40,7 +58,7 @@ vtkMRMLUltrasoundSnapshotsNode::vtkMRMLUltrasoundSnapshotsNode()
 //----------------------------------------------------------------------------
 vtkMRMLUltrasoundSnapshotsNode::~vtkMRMLUltrasoundSnapshotsNode()
 {
-
+  this->SetSnapshotNodeRef(NULL);
 }
 
 //----------------------------------------------------------------------------
@@ -49,11 +67,22 @@ void vtkMRMLUltrasoundSnapshotsNode::ReadXMLAttributes(const char** atts)
   std::cerr << "Reading UltrasoundSnapshots param node!" << std::endl;
   Superclass::ReadXMLAttributes(atts);
 
+  // Read all MRML node attributes from two arrays of names and values
   const char* attName;
   const char* attValue;
   
+  while(*atts != NULL)
+  {
+     attName = *(atts++);
+	 attValue = *(atts++);
 
-  this->WriteXML(std::cout,1);
+	 if(!strcmp(attName, "SnapshotNodeRef"))
+	 {
+	   this->SetSnapshotNodeRef(attValue);
+	 }
+  }
+
+  //this->WriteXML(std::cout,1);
 }
 
 //----------------------------------------------------------------------------
@@ -62,7 +91,11 @@ void vtkMRMLUltrasoundSnapshotsNode::WriteXML(ostream& of, int nIndent)
   Superclass::WriteXML(of, nIndent);
 
   vtkIndent indent(nIndent);
-
+  
+  if (this->SnapshotNodeRef != NULL)
+  {
+     of << indent << " SnapshotNodeRef=\"" << this->SnapshotNodeRef << "\"";
+  }
 
 }
 
@@ -73,7 +106,8 @@ void vtkMRMLUltrasoundSnapshotsNode::Copy(vtkMRMLNode *anode)
 {
   Superclass::Copy(anode);
   vtkMRMLUltrasoundSnapshotsNode *node = vtkMRMLUltrasoundSnapshotsNode::SafeDownCast(anode);
-  this->DisableModifiedEventOn();
+  this->SetSnapshotNodeRef(node->SnapshotNodeRef);
+  //this->DisableModifiedEventOn();
 
 
 }
@@ -83,7 +117,51 @@ void vtkMRMLUltrasoundSnapshotsNode::PrintSelf(ostream& os, vtkIndent indent)
 {
   Superclass::PrintSelf(os,indent);
 
+  os << indent << "SnapshotNodeRef: " <<
+	  (this->SnapshotNodeRef ? this->SnapshotNodeRef: "(none)") << "\n";
 
+}
+
+//----------------------------------------------------------------------------
+
+vtkMRMLSnapshotNode *vtkMRMLUltrasoundSnapshotsNode::GetSnapshotNode()
+{
+  
+  if (this->GetScene() && this->SnapshotNodeRef != NULL )
+  {
+	  //return vtkMRMLSnapshotNode::SafeDownCast(this->GetScene()->GetNodeByID(this->SnapshotNodeRef));
+  }
+  
+  return NULL;
+  
+}
+
+//----------------------------------------------------------------------------
+void vtkMRMLUltrasoundSnapshotsNode::UpdateReferences()
+{
+  Superclass::UpdateReferences();
+  
+  if (this->SnapshotNodeRef != NULL && this->Scene->GetNodeByID(this->SnapshotNodeRef) == NULL)
+  {
+    this->SetSnapshotNodeRef(NULL);
+  }
+}
+
+//----------------------------------------------------------------------------
+void vtkMRMLUltrasoundSnapshotsNode::UpdateReferenceID(const char *oldID, const char *newID)
+{
+  Superclass::UpdateReferenceID(oldID, newID);
+
+  if (this->SnapshotNodeRef && !strcmp(oldID, this->SnapshotNodeRef))
+  {
+    this->SetSnapshotNodeRef(newID);
+  }
+}
+
+//----------------------------------------------------------------------------
+void vtkMRMLUltrasoundSnapshotsNode::UpdateScene(vtkMRMLScene *scene)
+{
+  Superclass::UpdateScene(scene);
 }
 
 // End
