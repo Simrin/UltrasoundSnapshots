@@ -31,7 +31,8 @@
 #include "vtkSlicerUltrasoundSnapshotsModuleMRMLExport.h"
 
 
-class vtkMRMLSnapshotNode;
+class vtkMRMLModelDisplayNode;
+class vtkMRMLModelNode;
 
 /// \ingroup Slicer_QtModules_UltrasoundSnapshots
 class VTK_SLICER_ULTRASOUNDSNAPSHOTS_MODULE_MRML_EXPORT vtkMRMLUltrasoundSnapshotsNode : public vtkMRMLNode
@@ -69,11 +70,14 @@ class VTK_SLICER_ULTRASOUNDSNAPSHOTS_MODULE_MRML_EXPORT vtkMRMLUltrasoundSnapsho
 
   virtual void UpdateScene(vtkMRMLScene *scene);
 
+
   // Public interface
   
   vtkSetReferenceStringMacro(SnapshotNodeRef);
   vtkGetStringMacro(SnapshotNodeRef);
-  vtkMRMLSnapshotNode *GetSnapshotNode();
+  
+  /// Get associated display MRML node
+  vtkMRMLModelDisplayNode* GetSnapshotNode();
 
 protected:
   // Constructor/destructor
@@ -85,7 +89,7 @@ protected:
 
   // Protected member variables
 
-  char* SnapshotNodeRef;
+  char *SnapshotNodeRef;
 
 };
 

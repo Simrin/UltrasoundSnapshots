@@ -19,7 +19,8 @@ Version:   $Revision: 1.2 $
 
 // MRML includes
 #include "vtkMRMLUltrasoundSnapshotsNode.h"
-#include "vtkMRMLSnapshotNode.h"
+#include "vtkMRMLModelNode.h"
+#include "vtkMRMLModelDisplayNode.h"
 #include "vtkMRMLScene.h"
 #include "vtkSmartPointer.h"
 
@@ -124,17 +125,18 @@ void vtkMRMLUltrasoundSnapshotsNode::PrintSelf(ostream& os, vtkIndent indent)
 
 //----------------------------------------------------------------------------
 
-vtkMRMLSnapshotNode *vtkMRMLUltrasoundSnapshotsNode::GetSnapshotNode()
+vtkMRMLModelDisplayNode* vtkMRMLUltrasoundSnapshotsNode::GetSnapshotNode()
 {
-  
-  if (this->GetScene() && this->SnapshotNodeRef != NULL )
+
+  vtkMRMLModelDisplayNode* node = NULL;
+  if (this->GetScene() && this->SnapshotNodeRef != NULL)
   {
-	  //return vtkMRMLSnapshotNode::SafeDownCast(this->GetScene()->GetNodeByID(this->SnapshotNodeRef));
+    vtkMRMLNode* snode = this->GetScene()->GetNodeByID(this->SnapshotNodeRef);
+    node = vtkMRMLModelDisplayNode::SafeDownCast(snode);
   }
-  
-  return NULL;
-  
+  return node;
 }
+
 
 //----------------------------------------------------------------------------
 void vtkMRMLUltrasoundSnapshotsNode::UpdateReferences()
