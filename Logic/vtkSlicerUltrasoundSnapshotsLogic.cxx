@@ -1,11 +1,14 @@
 
+
 // UltrasoundSnapshots Logic includes
 #include "vtkSlicerUltrasoundSnapshotsLogic.h"
 
 // MRML includes
+#include <vtkMRMLConfigure.h>
 #include "vtkMRMLModelDisplayNode.h"
 #include "vtkMRMLModelNode.h"
 #include "vtkMRMLTransformNode.h"
+#include "vtkMRMLSliceSnapshotCollectionNode.h"
 
 // VTK includes
 #include <vtkCollection.h>
@@ -42,7 +45,47 @@ vtkSlicerUltrasoundSnapshotsLogic
   this->Superclass::PrintSelf( os, indent );
 }
 
+//---------------------------------------------------------------------------
+// Register the MRML node classes to the attached scene.
+//---------------------------------------------------------------------------
+void 
+vtkSlicerUltrasoundSnapshotsLogic
+::RegisterNodes()
+{
+  if (!this->GetMRMLScene())
+    {
+    vtkWarningMacro("RegisterNodes: no scene");
+    return;
+    }
 
+  //
+  // The core nodes
+  //
+
+  // base nodes
+  vtkMRMLModelNode* modelNode = vtkMRMLModelNode::New();
+  this->GetMRMLScene()->RegisterNodeClass(modelNode);
+  modelNode->Delete();
+
+  vtkMRMLModelDisplayNode* modelDisplayNode =
+      vtkMRMLModelDisplayNode::New();
+  this->GetMRMLScene()->RegisterNodeClass(modelDisplayNode);
+  modelDisplayNode->Delete();
+  
+}
+
+void
+vtkSlicerUltrasoundSnapshotsLogic
+::AddSliceSnapshotCollection( vtkMRMLScalarVolumeNode* InputNode )
+{
+  if ( InputNode == NULL )
+  {
+    return;
+  }
+  
+  vtkSmartPointer< vtkMRMLSliceSnapshotCollectionNode > snapshotCollection = vtkSmartPointer< vtkMRMLSliceSnapshotCollectionNode >::New();
+  this->GetMRMLScene()->AddNode( snapshotCollection );
+}
 
 void
 vtkSlicerUltrasoundSnapshotsLogic
@@ -52,9 +95,12 @@ vtkSlicerUltrasoundSnapshotsLogic
   {
     return;
   }
-  
-  
+  vtkSmartPointer< vtkMRMLSliceSnapshotCollectionNode > snapshotCollection = vtkSmartPointer< vtkMRMLSliceSnapshotCollectionNode >::New();
+
+//  snapshotCollection->AddSliceSnapshot(InputNode);
+
   vtkSmartPointer< vtkMRMLModelDisplayNode > snapshotDisp = vtkSmartPointer< vtkMRMLModelDisplayNode >::New();
+  
   this->GetMRMLScene()->AddNode( snapshotDisp );
   snapshotDisp->SetScene( this->GetMRMLScene() );
   snapshotDisp->SetDisableModifiedEvent( 1 );
@@ -65,11 +111,12 @@ vtkSlicerUltrasoundSnapshotsLogic
   snapshotDisp->SetDiffuse( 0.0 );
   snapshotDisp->SetSaveWithScene( 0 );
   snapshotDisp->SetDisableModifiedEvent( 0 );
-  
+
+
   std::stringstream nameStream;  // Use stream because later we may add other info in the name, e.g. number.
   nameStream << "Snapshot";
-  
   vtkSmartPointer< vtkMRMLModelNode > snapshotModel = vtkSmartPointer< vtkMRMLModelNode >::New();
+  //vtkMRMLModelNode* snapshotModel = snapshotCollection->GetModelNode();
   this->GetMRMLScene()->AddNode( snapshotModel );
   snapshotModel->SetName( nameStream.str().c_str() );
   snapshotModel->SetDescription( "Live Ultrasound Snapshot" );
@@ -77,7 +124,7 @@ vtkSlicerUltrasoundSnapshotsLogic
   snapshotModel->SetAndObserveDisplayNodeID( snapshotDisp->GetID() );
   snapshotModel->SetHideFromEditors( 0 );
   snapshotModel->SetSaveWithScene( 0 );
-  
+ 
   
   int dims[ 3 ] = { 0, 0, 0 };
   InputNode->GetImageData()->GetDimensions( dims );
@@ -189,11 +236,6 @@ void vtkSlicerUltrasoundSnapshotsLogic::SetMRMLSceneInternal(vtkMRMLScene * newS
   this->SetAndObserveMRMLSceneEventsInternal(newScene, events.GetPointer());
 }
 
-//-----------------------------------------------------------------------------
-void vtkSlicerUltrasoundSnapshotsLogic::RegisterNodes()
-{
-  assert(this->GetMRMLScene() != 0);
-}
 
 //---------------------------------------------------------------------------
 void vtkSlicerUltrasoundSnapshotsLogic::UpdateFromMRMLScene()

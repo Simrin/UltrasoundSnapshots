@@ -29,6 +29,7 @@
 
 // MRML includes
 #include "vtkMRMLScalarVolumeNode.h"
+class vtkMRMLSliceSnapshotCollectionNode;
 
 // STD includes
 #include <cstdlib>
@@ -45,9 +46,12 @@ public:
   static vtkSlicerUltrasoundSnapshotsLogic *New();
   vtkTypeMacro(vtkSlicerUltrasoundSnapshotsLogic, vtkSlicerModuleLogic);
   void PrintSelf(ostream& os, vtkIndent indent);
-  
+    /// Register MRML Node classes to Scene. Gets called automatically when the MRMLScene is attached to this logic class.
+  virtual void RegisterNodes();
+  void AddSliceSnapshotCollection(vtkMRMLScalarVolumeNode* InputNode);
+  //void AddSnapshot( vtkMRMLSliceSnapshotCollectionNode* snapshotCollection );
   void AddSnapshot( vtkMRMLScalarVolumeNode* InputNode );
-  void ClearSnapshots();
+  void ClearSnapshots(); //not used
   
   
 protected:
@@ -55,8 +59,6 @@ protected:
   virtual ~vtkSlicerUltrasoundSnapshotsLogic();
 
   virtual void SetMRMLSceneInternal(vtkMRMLScene* newScene);
-  /// Register MRML Node classes to Scene. Gets called automatically when the MRMLScene is attached to this logic class.
-  virtual void RegisterNodes();
   virtual void UpdateFromMRMLScene();
   virtual void OnMRMLSceneNodeAdded(vtkMRMLNode* node);
   virtual void OnMRMLSceneNodeRemoved(vtkMRMLNode* node);

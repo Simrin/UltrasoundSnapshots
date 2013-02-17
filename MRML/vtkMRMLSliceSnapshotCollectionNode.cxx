@@ -16,6 +16,12 @@ Version:   $Revision: 1.2 $
 #include <vtkCommand.h>
 #include <vtkObjectFactory.h>
 #include <vtkSmartPointer.h>
+#include <vtkImageData.h>
+#include <vtkPlaneSource.h>
+#include <vtkTransform.h>
+#include <vtkSmartPointer.h>
+#include <vtkNew.h>
+#include <vtkCollection.h>
 
 // MRML includes
 #include "vtkMRMLSliceSnapshotCollectionNode.h"
@@ -23,35 +29,22 @@ Version:   $Revision: 1.2 $
 #include "vtkMRMLModelDisplayNode.h"
 #include "vtkMRMLScene.h"
 #include "vtkSmartPointer.h"
+#include "vtkMRMLScalarVolumeNode.h"
+#include "vtkMRMLTransformNode.h"
+#include "vtkMRMLHierarchyNode.h"
 
-
+// STD includes
+#include <sstream>
+#include <algorithm>
 //----------------------------------------------------------------------------
-//vtkMRMLNodeNewMacro(vtkMRMLSliceSnapshotCollectionNode);
+vtkMRMLNodeNewMacro(vtkMRMLSliceSnapshotCollectionNode);
 
-//----------------------------------------------------------------------------
-vtkMRMLSliceSnapshotCollectionNode* vtkMRMLSliceSnapshotCollectionNode::New()
-{
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkMRMLSliceSnapshotCollectionNode");
-  if(ret)
-  {
-    return(vtkMRMLSliceSnapshotCollectionNode*)ret;
-  }
-  return new vtkMRMLSliceSnapshotCollectionNode;
-}
 
-vtkMRMLNode* vtkMRMLSliceSnapshotCollectionNode::CreateNodeInstance()
-{
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkMRMLSliceSnapshotCollectionNode");
-  if(ret)
-  {
-    return(vtkMRMLSliceSnapshotCollectionNode*)ret;
-  }
-  return new vtkMRMLSliceSnapshotCollectionNode;
-}
 //----------------------------------------------------------------------------
 vtkMRMLSliceSnapshotCollectionNode::vtkMRMLSliceSnapshotCollectionNode()
 {
-  this->SnapshotNodeRef = NULL;
+
+
   this->HideFromEditors = 1;
 
 }
@@ -59,7 +52,6 @@ vtkMRMLSliceSnapshotCollectionNode::vtkMRMLSliceSnapshotCollectionNode()
 //----------------------------------------------------------------------------
 vtkMRMLSliceSnapshotCollectionNode::~vtkMRMLSliceSnapshotCollectionNode()
 {
-  this->SetSnapshotNodeRef(NULL);
 }
 
 //----------------------------------------------------------------------------
@@ -77,14 +69,20 @@ void vtkMRMLSliceSnapshotCollectionNode::ReadXMLAttributes(const char** atts)
      attName = *(atts++);
 	 attValue = *(atts++);
 
-	 if(!strcmp(attName, "SnapshotNodeRef"))
-	 {
-	   this->SetSnapshotNodeRef(attValue);
-	 }
+    if (!strcmp(attName, "modelNodeID") )
+    {
+      std::stringstream ss(attValue);
+      while (!ss.eof())
+        {
+        std::string id;
+        ss >> id;
+        this->AddModelNodeID(id.c_str());
+        }
+    
+     }
   }
-
-  //this->WriteXML(std::cout,1);
 }
+
 
 //----------------------------------------------------------------------------
 void vtkMRMLSliceSnapshotCollectionNode::WriteXML(ostream& of, int nIndent)
@@ -93,10 +91,15 @@ void vtkMRMLSliceSnapshotCollectionNode::WriteXML(ostream& of, int nIndent)
 
   vtkIndent indent(nIndent);
   
-  if (this->SnapshotNodeRef != NULL)
+  for (unsigned int n=0; n < this->ModelNodeIDs.size(); n++)
   {
-     of << indent << " SnapshotNodeRef=\"" << this->SnapshotNodeRef << "\"";
+	  if (this->ModelNodeIDs[n] != std::string(NULL))
+    {
+      of << indent << " ModelNodeID=\"" << this->ModelNodeIDs[n] << "\"";
+    }
+
   }
+
 
 }
 
@@ -105,36 +108,147 @@ void vtkMRMLSliceSnapshotCollectionNode::WriteXML(ostream& of, int nIndent)
 // Does NOT copy: ID, FilePrefix, Name, SliceID
 void vtkMRMLSliceSnapshotCollectionNode::Copy(vtkMRMLNode *anode)
 {
+  int disabledModify = this->StartModify(); 
   Superclass::Copy(anode);
   vtkMRMLSliceSnapshotCollectionNode *node = vtkMRMLSliceSnapshotCollectionNode::SafeDownCast(anode);
-  this->SetSnapshotNodeRef(node->SnapshotNodeRef);
-  //this->DisableModifiedEventOn();
+  const int ndnodes = node->GetNumberOfModelNodeIDs();
+  for (int i=0; i<ndnodes; i++)
+    {
+    this->AddModelNodeID(node->ModelNodeIDs[i].c_str());
+    }
 
-
+  this->EndModify(disabledModify);
 }
 
 //----------------------------------------------------------------------------
 void vtkMRMLSliceSnapshotCollectionNode::PrintSelf(ostream& os, vtkIndent indent)
 {
   Superclass::PrintSelf(os,indent);
-
-  os << indent << "SnapshotNodeRef: " <<
-	  (this->SnapshotNodeRef ? this->SnapshotNodeRef: "(none)") << "\n";
+  
+  for (unsigned int n=0; n < this->ModelNodeIDs.size(); n++)
+  {
+    os << indent << "ModelNode ID = " <<
+      (this->ModelNodeIDs[n].c_str() ? this->ModelNodeIDs[n].c_str() : "(none)") << "\n";
+    
+  }
 
 }
 
-//----------------------------------------------------------------------------
-
-vtkMRMLModelDisplayNode* vtkMRMLSliceSnapshotCollectionNode::GetSnapshotNode()
+//-------------------------------------------------------
+void vtkMRMLSliceSnapshotCollectionNode::AddModelNodeID(const char* modelNodeID)
 {
+  if (modelNodeID == 0)
+    {
+    return;
+    }
 
-  vtkMRMLModelDisplayNode* node = NULL;
-  if (this->GetScene() && this->SnapshotNodeRef != NULL)
+  if (this->IsModelNodeIDPresent(modelNodeID))
+    {
+    return; // already exists, do nothing
+    }
+
+  this->ModelNodeIDs.push_back(std::string(modelNodeID));
+  if (this->Scene)
+    {
+    this->Scene->AddReferencedNodeID(modelNodeID, this);
+    }
+
+  this->Modified();
+}
+
+//-------------------------------------------------------
+void vtkMRMLSliceSnapshotCollectionNode::RemoveModelNodeID(char* modelNodeID)
+{
+  if (modelNodeID == NULL)
+    {
+    return;
+    }
+  std::vector< std::string > modelNodeIDs;
+  for(unsigned int i=0; i<this->ModelNodeIDs.size(); i++)
+    {
+    if (std::string(modelNodeID) != this->ModelNodeIDs[i])
+      {
+      modelNodeIDs.push_back(this->ModelNodeIDs[i]);
+      }
+    }
+  if (modelNodeIDs.size() != this->ModelNodeIDs.size())
+    {
+    this->Scene->RemoveReferencedNodeID(modelNodeID, this); 
+    this->ModelNodeIDs = modelNodeIDs;
+    this->Modified();
+    }
+  else
+    {
+    vtkErrorMacro("vtkMRMLSliceSnapshotCollectionNode::RemoveModelNodeID() id " << modelNodeID << " not found");
+    }
+}
+
+//-------------------------------------------------------
+void vtkMRMLSliceSnapshotCollectionNode::RemoveAllModelNodeIDs()
+{
+  for(unsigned int i=0; i<this->ModelNodeIDs.size(); i++)
+    {
+    this->Scene->RemoveReferencedNodeID(ModelNodeIDs[i].c_str(), this); 
+    }
+  this->ModelNodeIDs.clear();
+  this->Modified();
+}
+
+//-------------------------------------------------------
+const char* vtkMRMLSliceSnapshotCollectionNode::GetNthModelNodeID(unsigned int index)
+{
+  if (index >= ModelNodeIDs.size())
+    {
+    vtkErrorMacro("vtkMRMLSliceSnapshotCollectionNode::GetNthModelNodeID() index " << index << " outside the range 0-" << ModelNodeIDs.size()-1 );
+    return NULL;
+    }
+  return ModelNodeIDs[index].c_str();
+}
+
+//-------------------------------------------------------
+bool vtkMRMLSliceSnapshotCollectionNode::IsModelNodeIDPresent(const char* modelNodeID)const
+{
+  if (modelNodeID == 0)
+    {
+    return false;
+    }
+  std::string value(modelNodeID);
+  std::vector< std::string >::const_iterator it =
+    std::find(this->ModelNodeIDs.begin(), this->ModelNodeIDs.end(), value);
+  return it != this->ModelNodeIDs.end();
+}
+
+
+std::vector<vtkMRMLModelNode*>& vtkMRMLSliceSnapshotCollectionNode::GetAllModelNodes()
+{
+  std::vector<vtkMRMLModelNode*> ModelNodes(ModelNodeIDs.size());
+  if (this->GetScene() && !this->ModelNodeIDs.empty())
   {
-    vtkMRMLNode* snode = this->GetScene()->GetNodeByID(this->SnapshotNodeRef);
-    node = vtkMRMLModelDisplayNode::SafeDownCast(snode);
+    for(unsigned int n=0; n < ModelNodeIDs.size(); n++)
+	{
+	  ModelNodes[n] = vtkMRMLModelNode::SafeDownCast(this->GetScene()->GetNodeByID(this->ModelNodeIDs[n]));
+	}
   }
-  return node;
+  return ModelNodes;
+}
+
+
+
+//---------------------------------------------------------------------------
+void vtkMRMLSliceSnapshotCollectionNode::ProcessMRMLEvents ( vtkObject *caller,
+                                           unsigned long event, 
+                                           void *callData )
+{
+  Superclass::ProcessMRMLEvents(caller, event, callData);
+/*
+  vtkMRMLModelNode *dnode = this->GetModelNode();
+  if (dnode != NULL && dnode == vtkMRMLModelNode::SafeDownCast(caller) &&
+      event ==  vtkCommand::ModifiedEvent)
+    {
+    this->InvokeEvent(vtkCommand::ModifiedEvent, NULL);
+    }
+  return;
+  */
 }
 
 
@@ -142,22 +256,40 @@ vtkMRMLModelDisplayNode* vtkMRMLSliceSnapshotCollectionNode::GetSnapshotNode()
 void vtkMRMLSliceSnapshotCollectionNode::UpdateReferences()
 {
   Superclass::UpdateReferences();
-  
-  if (this->SnapshotNodeRef != NULL && this->Scene->GetNodeByID(this->SnapshotNodeRef) == NULL)
-  {
-    this->SetSnapshotNodeRef(NULL);
-  }
+  std::vector< std::string > modelNodeIDs;
+  for (unsigned int i=0; i < this->ModelNodeIDs.size(); i++)
+    {
+    if (this->Scene->GetNodeByID(this->ModelNodeIDs[i]) != NULL)
+      {
+      modelNodeIDs.push_back(this->ModelNodeIDs[i]);
+      }    
+    }
+  if (this->ModelNodeIDs.size() != modelNodeIDs.size())
+    {
+    modelNodeIDs = this->ModelNodeIDs;
+    this->Modified();
+    }
+
 }
 
 //----------------------------------------------------------------------------
 void vtkMRMLSliceSnapshotCollectionNode::UpdateReferenceID(const char *oldID, const char *newID)
 {
   Superclass::UpdateReferenceID(oldID, newID);
-
-  if (this->SnapshotNodeRef && !strcmp(oldID, this->SnapshotNodeRef))
+  bool modified = false;
+  for (unsigned int i=0; i<this->ModelNodeIDs.size(); i++)
   {
-    this->SetSnapshotNodeRef(newID);
+    if ( std::string(oldID) == this->ModelNodeIDs[i])
+    {
+      this->ModelNodeIDs[i] =  std::string(newID);
+      modified = true;
+	}
   }
+  if (modified)
+  {
+    this->Modified();
+  }
+
 }
 
 //----------------------------------------------------------------------------

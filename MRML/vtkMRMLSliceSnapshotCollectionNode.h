@@ -29,10 +29,13 @@
 #include "vtkMRMLNode.h"
 #include "vtkMRMLStorageNode.h"
 #include "vtkSlicerUltrasoundSnapshotsModuleMRMLExport.h"
-
-
+#include "vtkMRMLScalarVolumeNode.h"
+#include "vtkMRMLDisplayableHierarchyNode.h"
 class vtkMRMLModelDisplayNode;
 class vtkMRMLModelNode;
+
+#include <string>
+#include <vector>
 
 /// \ingroup Slicer_QtModules_UltrasoundSnapshots
 class VTK_SLICER_ULTRASOUNDSNAPSHOTS_MODULE_MRML_EXPORT vtkMRMLSliceSnapshotCollectionNode : public vtkMRMLNode
@@ -59,9 +62,6 @@ class VTK_SLICER_ULTRASOUNDSNAPSHOTS_MODULE_MRML_EXPORT vtkMRMLSliceSnapshotColl
   // Get node XML tag name (like Volume, Model)
   virtual const char* GetNodeTagName() {return "SliceSnapshotCollection";};
 
-  //
-  //virtual void SetSceneReferences();
-
   // Updates this node if it depends on other nodes when the node is deleted in the scene
   virtual void UpdateReferences();
 
@@ -70,14 +70,45 @@ class VTK_SLICER_ULTRASOUNDSNAPSHOTS_MODULE_MRML_EXPORT vtkMRMLSliceSnapshotColl
 
   virtual void UpdateScene(vtkMRMLScene *scene);
 
+  /// 
+  /// Get associated model MRML node
+  std::vector<vtkMRMLModelNode*>& GetAllModelNodes();
 
-  // Public interface
-  
-  vtkSetReferenceStringMacro(SnapshotNodeRef);
-  vtkGetStringMacro(SnapshotNodeRef);
-  
-  /// Get associated display MRML node
-  vtkMRMLModelDisplayNode* GetSnapshotNode();
+  //vtkMRMLModelNode* GetModelNode();
+  /// 
+  /// alternative method to propagate events generated in Display nodes
+  virtual void ProcessMRMLEvents ( vtkObject * /*caller*/, 
+                                   unsigned long /*event*/, 
+                                   void * /*callData*/ );
+
+  /// Add View Node ID for the view to display this node in.
+  /// \sa ViewNodeIDs, RemoveViewNodeID(), RemoveAllViewNodeIDs()
+  void AddModelNodeID(const char* viewNodeID);
+
+  /// Remove View Node ID for the view to display this node in.
+  /// \sa ViewNodeIDs, AddViewNodeID(), RemoveAllViewNodeIDs()
+  void RemoveModelNodeID(char* viewNodeID);
+  /// Remove All View Node IDs for the views to display this node in.
+  /// \sa ViewNodeIDs, AddViewNodeID(), RemoveViewNodeID()
+  void RemoveAllModelNodeIDs();
+  /// Get number of View Node ID's for the view to display this node in.
+  /// If 0, display in all views
+  /// \sa ViewNodeIDs, GetViewNodeIDs(), AddViewNodeID()
+  inline int GetNumberOfModelNodeIDs()const;
+  /// Get View Node ID's for the view to display this node in.
+  /// If NULL, display in all views
+  /// \sa ViewNodeIDs, GetViewNodeIDs(), AddViewNodeID()
+  const char* GetNthModelNodeID(unsigned int index);
+  /// Get all View Node ID's for the view to display this node in.
+  /// If empty, display in all views
+  /// \sa ViewNodeIDs, GetNthViewNodeID(), AddViewNodeID()
+  inline std::vector< std::string > GetModelNodeIDs()const;
+  /// True if the view node id is present in the viewnodeid list
+  /// false if not found
+  /// \sa ViewNodeIDs, IsDisplayableInView(), AddViewNodeID()
+  bool IsModelNodeIDPresent(const char* viewNodeID)const;
+
+
 
 protected:
   // Constructor/destructor
@@ -89,9 +120,20 @@ protected:
 
   // Protected member variables
 
-  char *SnapshotNodeRef;
+
+ /// Data
+
+
+  std::vector< std::string > ModelNodeIDs;
+
 
 };
+
+//----------------------------------------------------------------------------
+int vtkMRMLSliceSnapshotCollectionNode::GetNumberOfModelNodeIDs()const
+{
+  return static_cast<int>(this->ModelNodeIDs.size());
+}
 
 #endif
 
