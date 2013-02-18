@@ -135,5 +135,11 @@ int vtkMRMLSliceSnapshotCollectionNode::GetNumberOfModelNodeIDs()const
   return static_cast<int>(this->ModelNodeIDs.size());
 }
 
+//----------------------------------------------------------------------------
+std::vector< std::string > vtkMRMLSliceSnapshotCollectionNode::GetModelNodeIDs()const
+{
+  return this->ModelNodeIDs;
+}
+
 #endif
 

@@ -10,6 +10,7 @@
 #include "vtkMRMLTransformNode.h"
 #include "vtkMRMLSliceSnapshotCollectionNode.h"
 
+
 // VTK includes
 #include <vtkCollection.h>
 #include <vtkImageData.h>
@@ -17,11 +18,15 @@
 #include <vtkPlaneSource.h>
 #include <vtkSmartPointer.h>
 #include <vtkTransform.h>
+#include <vtksys/SystemTools.hxx> 
+
 
 // STD includes
 #include <cassert>
+#include <algorithm>
 
-
+// Logic includes
+#include "vtkSlicerModelsLogic.h"
 
 //----------------------------------------------------------------------------
 vtkStandardNewMacro(vtkSlicerUltrasoundSnapshotsLogic);
@@ -89,13 +94,12 @@ vtkSlicerUltrasoundSnapshotsLogic
 
 void
 vtkSlicerUltrasoundSnapshotsLogic
-::AddSnapshot( vtkMRMLScalarVolumeNode* InputNode )
+::AddSnapshot( vtkMRMLScalarVolumeNode* InputNode, vtkMRMLSliceSnapshotCollectionNode* SnapshotCollectionNode )
 {
   if ( InputNode == NULL )
   {
     return;
   }
-  vtkSmartPointer< vtkMRMLSliceSnapshotCollectionNode > snapshotCollection = vtkSmartPointer< vtkMRMLSliceSnapshotCollectionNode >::New();
 
 //  snapshotCollection->AddSliceSnapshot(InputNode);
 
@@ -124,7 +128,8 @@ vtkSlicerUltrasoundSnapshotsLogic
   snapshotModel->SetAndObserveDisplayNodeID( snapshotDisp->GetID() );
   snapshotModel->SetHideFromEditors( 0 );
   snapshotModel->SetSaveWithScene( 0 );
- 
+  
+  SnapshotCollectionNode->AddModelNodeID(snapshotModel->GetID());
   
   int dims[ 3 ] = { 0, 0, 0 };
   InputNode->GetImageData()->GetDimensions( dims );
@@ -194,6 +199,38 @@ vtkSlicerUltrasoundSnapshotsLogic
   snapshotModel->GetModelDisplayNode()->SetAndObserveTextureImageData( image );
 }
 
+//----------------------------------------------------------------------------
+vtkMRMLModelNode* vtkSlicerUltrasoundSnapshotsLogic::LoadSliceSnapshot(const char* filename)
+{
+  
+
+  // load models
+  
+  vtkSlicerModelsLogic* modelsLogic = vtkSlicerModelsLogic::New();
+
+  modelsLogic->SetMRMLScene(this->GetMRMLScene());
+  vtkMRMLModelNode* modelNode= modelsLogic->AddModel(filename);
+  
+  return modelNode;
+}
+
+
+//----------------------------------------------------------------------------
+int vtkSlicerUltrasoundSnapshotsLogic::LoadSliceSnapshotCollection(const char* dirname, const char* suffix)
+{
+
+  // load models
+  
+  vtkSlicerModelsLogic* modelsLogic = vtkSlicerModelsLogic::New();
+
+  modelsLogic->SetMRMLScene(this->GetMRMLScene());
+  int res = modelsLogic->AddModels(dirname,suffix);
+  
+  //change reference ids
+
+
+  return res;
+}
 
 
 void

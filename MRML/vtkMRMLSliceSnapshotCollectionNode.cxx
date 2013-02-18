@@ -36,6 +36,12 @@ Version:   $Revision: 1.2 $
 // STD includes
 #include <sstream>
 #include <algorithm>
+
+//vtkCxxSetObjectMacro(vtkMRMLSliceSnapshotCollectionNode, SnapshotCollection, vtkSliceSnapshotCollection);
+//vtkCxxSetObjectMacro(vtkMRMLCameraNode, AppliedTransform, vtkMatrix4x4);
+//vtkCxxSetReferenceStringMacro(vtkMRMLCameraNode, InternalActiveTag);
+
+
 //----------------------------------------------------------------------------
 vtkMRMLNodeNewMacro(vtkMRMLSliceSnapshotCollectionNode);
 
@@ -44,6 +50,8 @@ vtkMRMLNodeNewMacro(vtkMRMLSliceSnapshotCollectionNode);
 vtkMRMLSliceSnapshotCollectionNode::vtkMRMLSliceSnapshotCollectionNode()
 {
 
+  //this->ModelNodeIDs = NULL;
+  //vtkCamera *camera = vtkCamera::New();
 
   this->HideFromEditors = 1;
 
@@ -134,6 +142,8 @@ void vtkMRMLSliceSnapshotCollectionNode::PrintSelf(ostream& os, vtkIndent indent
 
 }
 
+
+
 //-------------------------------------------------------
 void vtkMRMLSliceSnapshotCollectionNode::AddModelNodeID(const char* modelNodeID)
 {
@@ -209,9 +219,12 @@ const char* vtkMRMLSliceSnapshotCollectionNode::GetNthModelNodeID(unsigned int i
 bool vtkMRMLSliceSnapshotCollectionNode::IsModelNodeIDPresent(const char* modelNodeID)const
 {
   if (modelNodeID == 0)
-    {
+  {
     return false;
-    }
+  }
+  if (this->ModelNodeIDs.empty()){
+	return false;
+  }
   std::string value(modelNodeID);
   std::vector< std::string >::const_iterator it =
     std::find(this->ModelNodeIDs.begin(), this->ModelNodeIDs.end(), value);

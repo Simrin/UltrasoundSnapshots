@@ -29,6 +29,7 @@
 
 // MRML includes
 #include "vtkMRMLScalarVolumeNode.h"
+#include "vtkMRMLModelNode.h"
 class vtkMRMLSliceSnapshotCollectionNode;
 
 // STD includes
@@ -50,9 +51,11 @@ public:
   virtual void RegisterNodes();
   void AddSliceSnapshotCollection(vtkMRMLScalarVolumeNode* InputNode);
   //void AddSnapshot( vtkMRMLSliceSnapshotCollectionNode* snapshotCollection );
-  void AddSnapshot( vtkMRMLScalarVolumeNode* InputNode );
+  void AddSnapshot( vtkMRMLScalarVolumeNode* InputNode, vtkMRMLSliceSnapshotCollectionNode* snapshotCollectionNode );
   void ClearSnapshots(); //not used
-  
+    /// Load a fiducial list from file, returns NULL on failure
+  vtkMRMLModelNode* LoadSliceSnapshot(const char* filename);
+  int LoadSliceSnapshotCollection(const char* dirname, const char* suffix);
   
 protected:
   vtkSlicerUltrasoundSnapshotsLogic();
