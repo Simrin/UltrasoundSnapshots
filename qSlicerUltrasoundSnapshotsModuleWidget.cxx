@@ -12,6 +12,10 @@
 #include "vtkMRMLScalarVolumeNode.h"
 #include "vtkMRMLModelNode.h"
 #include "vtkMRMLSliceSnapshotCollectionNode.h"
+
+// VTK includes
+#include <vtkSmartPointer.h>
+
 //-----------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_ExtensionTemplate
 class qSlicerUltrasoundSnapshotsModuleWidgetPrivate: public Ui_qSlicerUltrasoundSnapshotsModule
@@ -22,8 +26,9 @@ protected:
 public:
   qSlicerUltrasoundSnapshotsModuleWidgetPrivate( qSlicerUltrasoundSnapshotsModuleWidget& object );
   vtkSlicerUltrasoundSnapshotsLogic* logic() const;
-  vtkSmartPointer<vtkMRMLSliceSnapshotCollectionNode> MRMLSliceSnapshotCollectionNode;
-  virtual void init();
+  //vtkSmartPointer<vtkMRMLSliceSnapshotCollectionNode> MRMLSliceSnapshotCollectionNode;
+  //virtual void init();
+  void setupUi(qSlicerWidget* widget);
 };
 
 
@@ -46,19 +51,31 @@ qSlicerUltrasoundSnapshotsModuleWidgetPrivate::logic() const
 }
 
 // -----------------------------------------------------------------------------
-void qSlicerUltrasoundSnapshotsModuleWidgetPrivate::init()
+
+
+
+//-----------------------------------------------------------------------------
+// qSlicerAnnotationModuleWidgetPrivate methods
+
+//-----------------------------------------------------------------------------
+void qSlicerUltrasoundSnapshotsModuleWidgetPrivate::setupUi(qSlicerWidget* widget)
 {
   Q_Q(qSlicerUltrasoundSnapshotsModuleWidget);
-  q->setNodeTypes(QStringList(QString("vtkMRMLModelNode")));
-  q->setBaseName("Model");
-  QObject::connect(q, SIGNAL(checkedNodesChanged()),
-                   q, SLOT(updateMRMLFromWidget()));
-  QObject::connect(q, SIGNAL(nodeAdded(vtkMRMLNode*)),
-                   q, SLOT(updateWidgetFromMRML()));
-  QObject::connect(q, SIGNAL(nodeAboutToBeRemoved(vtkMRMLNode*)),
-                   q, SLOT(updateWidgetFromMRML()));
-}
 
+
+
+  this->Ui_qSlicerUltrasoundSnapshotsModule::setupUi(widget);
+
+  //q->connect(this->ModuleComboBox, SIGNAL( currentNodeChanged( vtkMRMLNode* ) ), SLOT( onModuleNodeSelected(vtkMRMLNode*) ) );
+  //this->GetMRMLScene()->RegisterNodeClass(vtkSmartPointer <vtkMRMLSliceSnapshotCollectionNode>::New());
+  q->connect(this->UltrasoundImageComboBox, SIGNAL(currentNodeChanged(vtkMRMLNode*)), SLOT(onCurrentMRMLUSSourceNodeChanged(vtkMRMLNode*)));
+  
+  q->connect(this->AddSnapshotButton, SIGNAL( clicked() ), SLOT( OnAddSnapshotClicked() ) );
+  // connect( d->ClearSnapshotsButton, SIGNAL( clicked() ), this, SLOT( OnClearSnapshotsClicked() ) );
+
+
+
+}
 
 
 
@@ -68,20 +85,51 @@ void qSlicerUltrasoundSnapshotsModuleWidgetPrivate::init()
 
 
 qSlicerUltrasoundSnapshotsModuleWidget
-::qSlicerUltrasoundSnapshotsModuleWidget(QWidget* _parent)
-  : Superclass( _parent )
-  , d_ptr( new qSlicerUltrasoundSnapshotsModuleWidgetPrivate( *this ) )
+::~qSlicerUltrasoundSnapshotsModuleWidget()
 {
 }
+/*
+void qSlicerUltrasoundSnapshotsModuleWidget::onModuleNodeSelected(vtkMRMLNode* node)
+{
+  Q_D( qSlicerUltrasoundSnapshotsModuleWidget );
+ 
+
+  vtkMRMLSliceSnapshotCollectionNode* SnapshotCollectionNode = vtkMRMLSliceSnapshotCollectionNode::SafeDownCast( node );
+  
+  d->logic()->SetSnapshotCollectionNode( SnapshotCollectionNode );
+
+}
+*/
+/*
+void qSlicerUltrasoundSnapshotsModuleWidgetPrivate::init()
+{
+  Q_Q(qSlicerUltrasoundSnapshotsModuleWidget);
+  q->setupUi(this);
+
+  QStringList nodeTypes = QStringList();
+  nodeTypes.append("vtkMRMLModelNode");
+  q->setNodeTypes(nodeTypes);
+  //q->setNodeTypes(QStringList(QString()));
+  //q->setBaseName("Model");
+  connect(d->UltrasoundImageComboBox, SIGNAL(currentNodeChanged(vtkMRMLNode*)),this, SLOT(onCurrentMRMLUSSourceNodeChanged(vtkMRMLNode*)));
+  
+  connect( d->AddSnapshotButton, SIGNAL( clicked() ), this, SLOT( OnAddSnapshotClicked() ) );
+  // connect( d->ClearSnapshotsButton, SIGNAL( clicked() ), this, SLOT( OnClearSnapshotsClicked() ) );
+
+}
+
+*/
 
 
 
 qSlicerUltrasoundSnapshotsModuleWidget
-::~qSlicerUltrasoundSnapshotsModuleWidget()
+::qSlicerUltrasoundSnapshotsModuleWidget(QWidget* _parent)
+  : Superclass( _parent )
+  , d_ptr( new qSlicerUltrasoundSnapshotsModuleWidgetPrivate( *this ) )
 {
+	//Q_D(qMRMLUltrasoundSnapshotModuleWidget);
+	//d->init();
 }
-
-
 
 void
 qSlicerUltrasoundSnapshotsModuleWidget
@@ -95,11 +143,11 @@ qSlicerUltrasoundSnapshotsModuleWidget
   {
     vnode = vtkMRMLScalarVolumeNode::SafeDownCast( cnode );
   }
-  vtkMRMLSliceSnapshotCollectionNode* snapshotCollectionNode = d->MRMLSliceSnapshotCollectionNode; 
+  //vtkMRMLSliceSnapshotCollectionNode* snapshotCollectionNode = d->MRMLSliceSnapshotCollectionNode; 
   if ( vnode != NULL )
   {
     
-    d->logic()->AddSnapshot( vnode,snapshotCollectionNode );
+    d->logic()->AddSnapshot( vnode );
   }
 }
 
@@ -122,14 +170,9 @@ qSlicerUltrasoundSnapshotsModuleWidget
 ::setup()
 {
   Q_D(qSlicerUltrasoundSnapshotsModuleWidget);
-  d->setupUi(this);
 
   this->Superclass::setup();
-
-  connect(d->UltrasoundImageComboBox, SIGNAL(currentNodeChanged(vtkMRMLNode*)),this, SLOT(onCurrentMRMLUSSourceNodeChanged(vtkMRMLNode*)));
-  
-  connect( d->AddSnapshotButton, SIGNAL( clicked() ), this, SLOT( OnAddSnapshotClicked() ) );
-  // connect( d->ClearSnapshotsButton, SIGNAL( clicked() ), this, SLOT( OnClearSnapshotsClicked() ) );
+  d->setupUi(this);
 }
 
 

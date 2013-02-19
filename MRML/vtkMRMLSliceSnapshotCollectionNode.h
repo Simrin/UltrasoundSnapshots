@@ -80,6 +80,8 @@ class VTK_SLICER_ULTRASOUNDSNAPSHOTS_MODULE_MRML_EXPORT vtkMRMLSliceSnapshotColl
   virtual void ProcessMRMLEvents ( vtkObject * /*caller*/, 
                                    unsigned long /*event*/, 
                                    void * /*callData*/ );
+  /// model nodes as references.
+  //virtual void vtkMRMLSliceSnapshotCollectionNode::SetModelNodeIDs(std::vector< std::string > modelNodeIDs);
 
   /// Add View Node ID for the view to display this node in.
   /// \sa ViewNodeIDs, RemoveViewNodeID(), RemoveAllViewNodeIDs()
@@ -132,7 +134,7 @@ protected:
 //----------------------------------------------------------------------------
 int vtkMRMLSliceSnapshotCollectionNode::GetNumberOfModelNodeIDs()const
 {
-  return static_cast<int>(this->ModelNodeIDs.size());
+  return this->ModelNodeIDs.size();
 }
 
 //----------------------------------------------------------------------------

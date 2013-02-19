@@ -28,14 +28,29 @@
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
           <layout class="QGridLayout" name="gridLayout">
-           <item row="0" column="0">
-            <widget class="QLabel" name="label">
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_2">
              <property name="text">
-              <string>Ultrasound source: </string>
+              <string>Module Node:</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="1">
+           <item row="1" column="1">
+            <widget class="qMRMLNodeComboBox" name="ModuleComboBox">
+             <property name="nodeTypes">
+              <stringlist>
+               <string>vtkMRMLSliceSnapshotCollectionNode</string>
+              </stringlist>
+             </property>
+             <property name="noneEnabled">
+              <bool>true</bool>
+             </property>
+             <property name="removeEnabled">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
             <widget class="qMRMLNodeComboBox" name="UltrasoundImageComboBox">
              <property name="nodeTypes">
               <stringlist>
@@ -50,6 +65,13 @@
              </property>
              <property name="removeEnabled">
               <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Image Source:</string>
              </property>
             </widget>
            </item>
@@ -129,6 +151,22 @@
     </hint>
     <hint type="destinationlabel">
      <x>235</x>
+     <y>74</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>qSlicerUltrasoundSnapshotsModule</sender>
+   <signal>mrmlSceneChanged(vtkMRMLScene*)</signal>
+   <receiver>ModuleComboBox</receiver>
+   <slot>setMRMLScene(vtkMRMLScene*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>187</x>
+     <y>366</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>225</x>
      <y>74</y>
     </hint>
    </hints>

@@ -49,13 +49,15 @@ public slots:
 
 protected slots:
   void onCurrentMRMLUSSourceNodeChanged(vtkMRMLNode* node);
+  //void onModuleNodeSelected(vtkMRMLNode* node);
 
 protected:
   QScopedPointer<qSlicerUltrasoundSnapshotsModuleWidgetPrivate> d_ptr;
   
-  virtual void setup();
 
 private:
+  virtual void setup();
+
   Q_DECLARE_PRIVATE(qSlicerUltrasoundSnapshotsModuleWidget);
   Q_DISABLE_COPY(qSlicerUltrasoundSnapshotsModuleWidget);
 };

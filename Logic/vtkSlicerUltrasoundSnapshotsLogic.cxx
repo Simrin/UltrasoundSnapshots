@@ -34,11 +34,17 @@ vtkStandardNewMacro(vtkSlicerUltrasoundSnapshotsLogic);
 //----------------------------------------------------------------------------
 vtkSlicerUltrasoundSnapshotsLogic::vtkSlicerUltrasoundSnapshotsLogic()
 {
+  this->SnapshotCollectionNode = NULL;
 }
 
 //----------------------------------------------------------------------------
 vtkSlicerUltrasoundSnapshotsLogic::~vtkSlicerUltrasoundSnapshotsLogic()
 {
+  if ( this->SnapshotCollectionNode != NULL )
+  {
+    this->SnapshotCollectionNode->Delete();
+    this->SnapshotCollectionNode = NULL;
+  }
 }
 
 
@@ -49,6 +55,7 @@ vtkSlicerUltrasoundSnapshotsLogic
 {
   this->Superclass::PrintSelf( os, indent );
 }
+
 
 //---------------------------------------------------------------------------
 // Register the MRML node classes to the attached scene.
@@ -67,41 +74,107 @@ vtkSlicerUltrasoundSnapshotsLogic
   // The core nodes
   //
 
+  this->GetMRMLScene()->RegisterNodeClass(vtkSmartPointer< vtkMRMLSliceSnapshotCollectionNode >::New());
+
+  /*
   // base nodes
   vtkMRMLModelNode* modelNode = vtkMRMLModelNode::New();
   this->GetMRMLScene()->RegisterNodeClass(modelNode);
   modelNode->Delete();
+*/
 
-  vtkMRMLModelDisplayNode* modelDisplayNode =
-      vtkMRMLModelDisplayNode::New();
-  this->GetMRMLScene()->RegisterNodeClass(modelDisplayNode);
-  modelDisplayNode->Delete();
   
+}
+
+//---------------------------------------------------------------------------
+// Return the toplevel Annotation hierarchy node ID or create one if there is none.
+// If an optional annotationNode is given, insert the toplevel hierarchy before it. If not,
+// just add the toplevel hierarchy node.
+//---------------------------------------------------------------------------
+bool vtkSlicerUltrasoundSnapshotsLogic::AddModelNodeID(vtkMRMLModelNode* modelNode)
+{
+  if (this->GetMRMLScene() == NULL)
+    {
+    return false;
+    }
+
+  /*
+  vtkCollection* nodes = this->GetMRMLScene() ? this->GetMRMLScene()->GetNodes() : 0;
+  if (nodes == 0 || modelNode == 0)
+    {
+    return 0;
+    }
+
+*/
+
+  char *modelNodeID = modelNode->GetID();
+
+
+  this->GetSnapshotCollectionNode()->AddModelNodeID(modelNodeID);
+  //int numSnapshots = snapshotCollectionNode->GetNumberOfModelNodeIDs();
+   
+  return true;
+/*
+  vtkMRMLNode *node;
+  vtkCollectionSimpleIterator it;
+  for (nodes->InitTraversal(it);
+       (node = vtkMRMLNode::SafeDownCast(nodes->GetNextItemAsObject(it))) ;)
+    {
+    vtkMRMLSliceSnapshotCollectionNode* snapshotCollectionNode = vtkMRMLSliceSnapshotCollectionNode::SafeDownCast(node);
+    if (snapshotCollectionNode)
+      {
+      snapshotCollectionNode->AddModelNodeID(modelNodeID);
+	  int numSnapshots = snapshotCollectionNode->GetNumberOfModelNodeIDs();
+      }
+    }
+  */
+ // vtkMRMLSliceSnapshotCollectionNode *snapshotCollectionNode = vtkMRMLSliceSnapshotCollectionNode::SafeDownCast(node);
+  /*
+  if (!toplevelNode)
+    {
+    // no top level hierarchy node is currently in the scene, create a new one
+    toplevelNode = vtkMRMLAnnotationHierarchyNode::New();
+    
+    toplevelNode->HideFromEditorsOff();
+    toplevelNode->SetName(this->GetMRMLScene()->GetUniqueNameByString(topLevelName));
+    
+    if (!node)
+      {
+      this->GetMRMLScene()->AddNode(toplevelNode);
+      }
+    else
+      {
+      this->GetMRMLScene()->InsertBeforeNode(node, toplevelNode);
+      }
+    toplevelNodeID = toplevelNode->GetID();
+    if (this->AddDisplayNodeForHierarchyNode(toplevelNode) == NULL)
+      {
+      vtkErrorMacro("GetTopLevelHierarchyNodeID: error adding a display node for new top level node " << toplevelNodeID);
+      }
+    this->InvokeEvent(HierarchyNodeAddedEvent, toplevelNode);
+    toplevelNode->Delete();
+    }
+  else
+    {
+    toplevelNodeID = toplevelNode->GetID();
+    }
+	
+  col->RemoveAllItems();
+  col->Delete();
+  return ModelNodeID;
+  */
 }
 
 void
 vtkSlicerUltrasoundSnapshotsLogic
-::AddSliceSnapshotCollection( vtkMRMLScalarVolumeNode* InputNode )
+::AddSnapshot( vtkMRMLScalarVolumeNode* InputNode )
 {
   if ( InputNode == NULL )
   {
     return;
   }
-  
-  vtkSmartPointer< vtkMRMLSliceSnapshotCollectionNode > snapshotCollection = vtkSmartPointer< vtkMRMLSliceSnapshotCollectionNode >::New();
-  this->GetMRMLScene()->AddNode( snapshotCollection );
-}
 
-void
-vtkSlicerUltrasoundSnapshotsLogic
-::AddSnapshot( vtkMRMLScalarVolumeNode* InputNode, vtkMRMLSliceSnapshotCollectionNode* SnapshotCollectionNode )
-{
-  if ( InputNode == NULL )
-  {
-    return;
-  }
 
-//  snapshotCollection->AddSliceSnapshot(InputNode);
 
   vtkSmartPointer< vtkMRMLModelDisplayNode > snapshotDisp = vtkSmartPointer< vtkMRMLModelDisplayNode >::New();
   
@@ -128,8 +201,24 @@ vtkSlicerUltrasoundSnapshotsLogic
   snapshotModel->SetAndObserveDisplayNodeID( snapshotDisp->GetID() );
   snapshotModel->SetHideFromEditors( 0 );
   snapshotModel->SetSaveWithScene( 0 );
-  
-  SnapshotCollectionNode->AddModelNodeID(snapshotModel->GetID());
+
+
+
+    
+    //if (    if (annotationNode && annotationNode->GetScene() && annotationNode->GetID()))
+	//{
+      bool modelNodeAdded = AddModelNodeID(snapshotModel);
+	//}
+    //else
+    //{
+      //vtkSmartPointer< vtkMRMLSliceSnapshotCollectionNode > snapshotCollectionNode = vtkSmartPointer< vtkMRMLSliceSnapshotCollectionNode >::New();
+	  //this->GetMRMLScene()->AddNode(snapshotCollectionNode);
+	  //bool modelNodeAdded = AddModelNodeID(snapshotModel, snapshotCollectionNode);
+    //}
+  //}
+
+
+  //SnapshotCollectionNode->AddModelNodeID(snapshotModel->GetID());
   
   int dims[ 3 ] = { 0, 0, 0 };
   InputNode->GetImageData()->GetDimensions( dims );
@@ -261,7 +350,28 @@ vtkSlicerUltrasoundSnapshotsLogic
   collection->Delete();  
 }
 
+//---------------------------------------------------------------------------
+void vtkSlicerUltrasoundSnapshotsLogic
+::ProcessMRMLSceneEvents(vtkObject *caller, unsigned long event, void *callData)
+{
+  this->Superclass::ProcessMRMLSceneEvents(caller, event, callData);
 
+  vtkMRMLSliceSnapshotCollectionNode* snapshotCollectionNode = vtkMRMLSliceSnapshotCollectionNode::SafeDownCast(
+    reinterpret_cast<vtkObject*>(callData));
+/* 
+  if (snapshotCollectionNode)
+  {
+    switch (event)
+      {
+      case vtkMRMLScene::NodeAddedEvent:
+        this->OnMRMLSceneNodeAdded(annotationNode);
+        break;
+      }
+    return;
+    }
+  }
+  */
+}
 
 //---------------------------------------------------------------------------
 void vtkSlicerUltrasoundSnapshotsLogic::SetMRMLSceneInternal(vtkMRMLScene * newScene)
@@ -293,3 +403,9 @@ void vtkSlicerUltrasoundSnapshotsLogic
 {
 }
 
+void vtkSlicerUltrasoundSnapshotsLogic
+::SetCollectionNode( vtkMRMLSliceSnapshotCollectionNode* node )
+{
+  vtkSetMRMLNodeMacro( this->SnapshotCollectionNode, node );
+  this->Modified();
+}

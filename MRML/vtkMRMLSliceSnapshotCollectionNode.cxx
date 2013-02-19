@@ -50,7 +50,7 @@ vtkMRMLNodeNewMacro(vtkMRMLSliceSnapshotCollectionNode);
 vtkMRMLSliceSnapshotCollectionNode::vtkMRMLSliceSnapshotCollectionNode()
 {
 
-  //this->ModelNodeIDs = NULL;
+  this->ModelNodeIDs.clear();
   //vtkCamera *camera = vtkCamera::New();
 
   this->HideFromEditors = 1;
@@ -60,6 +60,7 @@ vtkMRMLSliceSnapshotCollectionNode::vtkMRMLSliceSnapshotCollectionNode()
 //----------------------------------------------------------------------------
 vtkMRMLSliceSnapshotCollectionNode::~vtkMRMLSliceSnapshotCollectionNode()
 {
+  this->ModelNodeIDs.clear();
 }
 
 //----------------------------------------------------------------------------
@@ -263,8 +264,52 @@ void vtkMRMLSliceSnapshotCollectionNode::ProcessMRMLEvents ( vtkObject *caller,
   return;
   */
 }
+/*
+//---------------------------------------------------------------------------
+void vtkMRMLSliceSnapshotCollectionNode::SetModelIDs()
+{
+  const int numModels = this->GetNumberOfModelNodeIDs();
+  // reset the names
+  this->ModelNodeIDs.resize(numModels);
 
+  for (int i = 0; i < numModels; ++i)
+    {
+#ifndef NDEBUG
+    bool res =
+#endif
+      this->SetModelID(i);
+    // There is no reason why SetNameFromColor would fail because we control
+    // the array size.
+    assert(res);
+    }
+  //this->NamesInitialisedOn();
+}
 
+//---------------------------------------------------------------------------
+bool vtkMRMLColorNode::SetModelID(int index)
+{
+  double rgba[4];
+  bool res = this->GetColor(index, rgba);
+  std::stringstream ss;
+  ss.precision(3);
+  ss.setf(std::ios::fixed, std::ios::floatfield);
+  ss << "R=";
+  ss << rgba[0];
+  ss << " G=";
+  ss << rgba[1];
+  ss << " B=";
+  ss << rgba[2];
+  ss << " A=";
+  ss << rgba[3];
+  vtkDebugMacro("SetNamesFromColors: " << index << " Name = " << ss.str().c_str());
+  if (this->SetColorName(index, ss.str().c_str()) == 0)
+    {
+    vtkErrorMacro("SetNamesFromColors: Error setting color name " << index << " Name = " << ss.str().c_str());
+    return false;
+    }
+  return res;
+}
+*/
 //----------------------------------------------------------------------------
 void vtkMRMLSliceSnapshotCollectionNode::UpdateReferences()
 {

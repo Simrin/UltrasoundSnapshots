@@ -47,26 +47,33 @@ public:
   static vtkSlicerUltrasoundSnapshotsLogic *New();
   vtkTypeMacro(vtkSlicerUltrasoundSnapshotsLogic, vtkSlicerModuleLogic);
   void PrintSelf(ostream& os, vtkIndent indent);
-    /// Register MRML Node classes to Scene. Gets called automatically when the MRMLScene is attached to this logic class.
+  /// Register MRML Node classes to Scene. Gets called automatically when the MRMLScene is attached to this logic class.
   virtual void RegisterNodes();
-  void AddSliceSnapshotCollection(vtkMRMLScalarVolumeNode* InputNode);
+
+  bool AddModelNodeID(vtkMRMLModelNode* node);
   //void AddSnapshot( vtkMRMLSliceSnapshotCollectionNode* snapshotCollection );
-  void AddSnapshot( vtkMRMLScalarVolumeNode* InputNode, vtkMRMLSliceSnapshotCollectionNode* snapshotCollectionNode );
+  void AddSnapshot( vtkMRMLScalarVolumeNode* InputNode );
   void ClearSnapshots(); //not used
     /// Load a fiducial list from file, returns NULL on failure
   vtkMRMLModelNode* LoadSliceSnapshot(const char* filename);
   int LoadSliceSnapshotCollection(const char* dirname, const char* suffix);
+  vtkGetObjectMacro( SnapshotCollectionNode, vtkMRMLSliceSnapshotCollectionNode );
+  void SetCollectionNode( vtkMRMLSliceSnapshotCollectionNode* node );
   
 protected:
   vtkSlicerUltrasoundSnapshotsLogic();
   virtual ~vtkSlicerUltrasoundSnapshotsLogic();
 
+  // MRML events
+  virtual void ProcessMRMLSceneEvents(vtkObject *caller,
+                                      unsigned long event,
+                                      void *callData );
   virtual void SetMRMLSceneInternal(vtkMRMLScene* newScene);
   virtual void UpdateFromMRMLScene();
   virtual void OnMRMLSceneNodeAdded(vtkMRMLNode* node);
   virtual void OnMRMLSceneNodeRemoved(vtkMRMLNode* node);
 private:
-
+  vtkMRMLSliceSnapshotCollectionNode* SnapshotCollectionNode;
   vtkSlicerUltrasoundSnapshotsLogic(const vtkSlicerUltrasoundSnapshotsLogic&); // Not implemented
   void operator=(const vtkSlicerUltrasoundSnapshotsLogic&);               // Not implemented
 };
