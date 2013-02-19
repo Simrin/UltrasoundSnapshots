@@ -30,8 +30,6 @@
 #include "vtkMRMLStorageNode.h"
 #include "vtkSlicerUltrasoundSnapshotsModuleMRMLExport.h"
 #include "vtkMRMLScalarVolumeNode.h"
-#include "vtkMRMLDisplayableHierarchyNode.h"
-class vtkMRMLModelDisplayNode;
 class vtkMRMLModelNode;
 
 #include <string>
@@ -46,7 +44,6 @@ class VTK_SLICER_ULTRASOUNDSNAPSHOTS_MODULE_MRML_EXPORT vtkMRMLSliceSnapshotColl
 
   static vtkMRMLSliceSnapshotCollectionNode *New();
   vtkTypeMacro(vtkMRMLSliceSnapshotCollectionNode,vtkMRMLNode);
-  void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual vtkMRMLNode* CreateNodeInstance();
 
@@ -62,6 +59,8 @@ class VTK_SLICER_ULTRASOUNDSNAPSHOTS_MODULE_MRML_EXPORT vtkMRMLSliceSnapshotColl
   // Get node XML tag name (like Volume, Model)
   virtual const char* GetNodeTagName() {return "SliceSnapshotCollection";};
 
+  void PrintSelf(ostream& os, vtkIndent indent);
+  
   // Updates this node if it depends on other nodes when the node is deleted in the scene
   virtual void UpdateReferences();
 
@@ -70,47 +69,28 @@ class VTK_SLICER_ULTRASOUNDSNAPSHOTS_MODULE_MRML_EXPORT vtkMRMLSliceSnapshotColl
 
   virtual void UpdateScene(vtkMRMLScene *scene);
 
-  /// 
-  /// Get associated model MRML node
-  std::vector<vtkMRMLModelNode*>& GetAllModelNodes();
-
-  //vtkMRMLModelNode* GetModelNode();
-  /// 
-  /// alternative method to propagate events generated in Display nodes
+  //alternative method to propagate events generated in slicersnapshotcollection nodes
   virtual void ProcessMRMLEvents ( vtkObject * /*caller*/, 
                                    unsigned long /*event*/, 
                                    void * /*callData*/ );
-  /// model nodes as references.
-  //virtual void vtkMRMLSliceSnapshotCollectionNode::SetModelNodeIDs(std::vector< std::string > modelNodeIDs);
 
-  /// Add View Node ID for the view to display this node in.
-  /// \sa ViewNodeIDs, RemoveViewNodeID(), RemoveAllViewNodeIDs()
-  void AddModelNodeID(const char* viewNodeID);
+  // Add specific Model Node ID to the vector ModelNodeIDs
+  void AddModelNodeID(const char* modelNodeID);
 
-  /// Remove View Node ID for the view to display this node in.
-  /// \sa ViewNodeIDs, AddViewNodeID(), RemoveAllViewNodeIDs()
-  void RemoveModelNodeID(char* viewNodeID);
-  /// Remove All View Node IDs for the views to display this node in.
-  /// \sa ViewNodeIDs, AddViewNodeID(), RemoveViewNodeID()
+  // Remove specific Model Node ID from the vector ModelNodeIDs
+  void RemoveModelNodeID(char* modelNodeID);
+
+  // Remove all Model Node ID from the vector ModelNodeIDs
   void RemoveAllModelNodeIDs();
-  /// Get number of View Node ID's for the view to display this node in.
-  /// If 0, display in all views
-  /// \sa ViewNodeIDs, GetViewNodeIDs(), AddViewNodeID()
+
+  // Returns the number of Model Node IDs currently in ModelNodeIDs
   inline int GetNumberOfModelNodeIDs()const;
-  /// Get View Node ID's for the view to display this node in.
-  /// If NULL, display in all views
-  /// \sa ViewNodeIDs, GetViewNodeIDs(), AddViewNodeID()
-  const char* GetNthModelNodeID(unsigned int index);
-  /// Get all View Node ID's for the view to display this node in.
-  /// If empty, display in all views
-  /// \sa ViewNodeIDs, GetNthViewNodeID(), AddViewNodeID()
+
+  // Returns all the Model Node string IDs currently in ModelNodeIDs
   inline std::vector< std::string > GetModelNodeIDs()const;
-  /// True if the view node id is present in the viewnodeid list
-  /// false if not found
-  /// \sa ViewNodeIDs, IsDisplayableInView(), AddViewNodeID()
+  
+  // Returns true if the Model Node ID is present in ModelNodeIDs
   bool IsModelNodeIDPresent(const char* viewNodeID)const;
-
-
 
 protected:
   // Constructor/destructor
@@ -121,13 +101,7 @@ protected:
   void operator=(const vtkMRMLSliceSnapshotCollectionNode&);
 
   // Protected member variables
-
-
- /// Data
-
-
   std::vector< std::string > ModelNodeIDs;
-
 
 };
 

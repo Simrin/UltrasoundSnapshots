@@ -98,71 +98,15 @@ bool vtkSlicerUltrasoundSnapshotsLogic::AddModelNodeID(vtkMRMLModelNode* modelNo
     return false;
     }
 
-  /*
-  vtkCollection* nodes = this->GetMRMLScene() ? this->GetMRMLScene()->GetNodes() : 0;
-  if (nodes == 0 || modelNode == 0)
-    {
-    return 0;
-    }
-
-*/
 
   char *modelNodeID = modelNode->GetID();
 
 
-  this->GetSnapshotCollectionNode()->AddModelNodeID(modelNodeID);
+  //this->GetSnapshotCollectionNode()->AddModelNodeID(modelNodeID);
   //int numSnapshots = snapshotCollectionNode->GetNumberOfModelNodeIDs();
    
   return true;
-/*
-  vtkMRMLNode *node;
-  vtkCollectionSimpleIterator it;
-  for (nodes->InitTraversal(it);
-       (node = vtkMRMLNode::SafeDownCast(nodes->GetNextItemAsObject(it))) ;)
-    {
-    vtkMRMLSliceSnapshotCollectionNode* snapshotCollectionNode = vtkMRMLSliceSnapshotCollectionNode::SafeDownCast(node);
-    if (snapshotCollectionNode)
-      {
-      snapshotCollectionNode->AddModelNodeID(modelNodeID);
-	  int numSnapshots = snapshotCollectionNode->GetNumberOfModelNodeIDs();
-      }
-    }
-  */
- // vtkMRMLSliceSnapshotCollectionNode *snapshotCollectionNode = vtkMRMLSliceSnapshotCollectionNode::SafeDownCast(node);
-  /*
-  if (!toplevelNode)
-    {
-    // no top level hierarchy node is currently in the scene, create a new one
-    toplevelNode = vtkMRMLAnnotationHierarchyNode::New();
-    
-    toplevelNode->HideFromEditorsOff();
-    toplevelNode->SetName(this->GetMRMLScene()->GetUniqueNameByString(topLevelName));
-    
-    if (!node)
-      {
-      this->GetMRMLScene()->AddNode(toplevelNode);
-      }
-    else
-      {
-      this->GetMRMLScene()->InsertBeforeNode(node, toplevelNode);
-      }
-    toplevelNodeID = toplevelNode->GetID();
-    if (this->AddDisplayNodeForHierarchyNode(toplevelNode) == NULL)
-      {
-      vtkErrorMacro("GetTopLevelHierarchyNodeID: error adding a display node for new top level node " << toplevelNodeID);
-      }
-    this->InvokeEvent(HierarchyNodeAddedEvent, toplevelNode);
-    toplevelNode->Delete();
-    }
-  else
-    {
-    toplevelNodeID = toplevelNode->GetID();
-    }
-	
-  col->RemoveAllItems();
-  col->Delete();
-  return ModelNodeID;
-  */
+
 }
 
 void
